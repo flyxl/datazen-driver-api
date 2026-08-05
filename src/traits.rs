@@ -1,6 +1,7 @@
 //! Core driver traits.
 
 use async_trait::async_trait;
+use std::collections::HashMap;
 
 use crate::types::*;
 
@@ -172,6 +173,25 @@ pub trait DatabaseDriver: Send + Sync {
             server_version: String::new(),
             server_type: format!("{:?}", self.driver_type()),
         })
+    }
+
+    /// Switch the active database for subsequent queries.
+    /// Drivers that maintain per-session state (e.g. Kiwi) should override this.
+    async fn use_database(
+        &self,
+        _handle: &ConnectionHandle,
+        _database: &str,
+    ) -> Result<(), DriverError> {
+        Ok(())
+    }
+
+    /// Return driver-specific prompt overrides for AI features.
+    ///
+    /// Templates can use `{{variable}}` placeholders. Available variables per
+    /// scenario are documented in the main application's `PromptResolver`.
+    /// The default implementation returns an empty map (use global defaults).
+    fn prompt_overrides(&self) -> HashMap<PromptScenario, PromptTemplate> {
+        HashMap::new()
     }
 }
 
