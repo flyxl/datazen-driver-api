@@ -133,6 +133,19 @@ impl DatabaseDriver for ReuseDriver {
         self.inner.execute(handle, sql).await
     }
 
+    fn command_definitions(&self) -> Vec<DriverCommandDefinition> {
+        self.inner.command_definitions()
+    }
+
+    async fn execute_command(
+        &self,
+        handle: &ConnectionHandle,
+        command: &str,
+        input: serde_json::Value,
+    ) -> Result<CommandResult, DriverError> {
+        self.inner.execute_command(handle, command, input).await
+    }
+
     async fn begin_transaction(
         &self,
         handle: &ConnectionHandle,
@@ -201,7 +214,23 @@ impl DatabaseDriver for ReuseDriver {
         &self,
         handle: &ConnectionHandle,
         sql: &str,
+        opts: Option<&BackupRestoreOptions>,
     ) -> Result<(), DriverError> {
-        self.inner.restore_sql(handle, sql).await
+        self.inner.restore_sql(handle, sql, opts).await
+    }
+
+    async fn structure_capabilities(
+        &self,
+        handle: &ConnectionHandle,
+    ) -> Result<StructureCapabilities, DriverError> {
+        self.inner.structure_capabilities(handle).await
+    }
+
+    async fn plan_structure_changes(
+        &self,
+        handle: &ConnectionHandle,
+        request: &StructureChangeRequest,
+    ) -> Result<StructureChangePlan, DriverError> {
+        self.inner.plan_structure_changes(handle, request).await
     }
 }
