@@ -11,21 +11,17 @@ mod types;
 mod traits;
 mod factory;
 mod reuse;
+pub mod command;
 pub mod sql_dump;
 
+pub use command::*;
 pub use types::*;
 pub use traits::*;
 pub use factory::*;
 pub use reuse::ReuseDriver;
 
 /// Protocol version for the driver API.
-///
-/// Bump this when making breaking changes to `DatabaseDriver`, `KeyValueDriver`,
-/// or `DatabaseDriverFactory` traits.
 pub const PROTOCOL_VERSION: u32 = 1;
 
 /// Minimum protocol version the host still supports.
-///
-/// Plugins with version < MIN will be rejected; those between MIN and current
-/// will run in degraded mode (missing capabilities default to `false`).
 pub const MIN_PROTOCOL_VERSION: u32 = 1;
